@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MatchingView: View {
+    @State var isPresented: Bool = false
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("OOO 예비군님 안녕하세요")
@@ -85,9 +87,10 @@ struct MatchingView: View {
                         }
                     }
                 }
-                                
                 VStack {
-                    CustomButton(text: "매칭 시작하기")
+                    CustomButton(text: "매칭 시작하기") {
+                        isPresented = true
+                    }
                     Text("버튼을 누르면 목적지에 맞게 귀가 매칭이 시작됩니다.")
                         .font(.caption)
                         .foregroundColor(.gray)
@@ -97,6 +100,9 @@ struct MatchingView: View {
             Spacer()
         }
         .padding(.horizontal, 20)
+        .fullScreenCover(isPresented: $isPresented) {
+            DestinationView()
+        }
     }
 }
 
