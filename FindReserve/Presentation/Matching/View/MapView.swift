@@ -68,7 +68,7 @@ struct MapView: UIViewRepresentable, Equatable {
     }
     
     class Coordinator: NSObject, MLNMapViewDelegate {
-        private let currentLocation: CLLocationCoordinate2D
+        private var currentLocation: CLLocationCoordinate2D
         
         init(currentLocation: CLLocationCoordinate2D) {
             self.currentLocation = currentLocation
@@ -79,7 +79,32 @@ struct MapView: UIViewRepresentable, Equatable {
         }
         
         func changedLocation(_ mapView: MLNMapView, _ location: CLLocationCoordinate2D) {
-            mapView.setCamera(MLNMapCamera(lookingAtCenter: location, altitude: 2000, pitch: 3, heading: 3), animated: false)
+            self.currentLocation = location
+            mapView.setCamera(MLNMapCamera(lookingAtCenter: currentLocation, altitude: 2000, pitch: 3, heading: 3), animated: false)
+            
+            if let layer = mapView.style?.layer(withIdentifier: "marker-style") {
+                mapView.style?.removeLayer(layer)
+            }
+            
+            if let source = mapView.style?.source(withIdentifier: "marker-source") {
+                mapView.style?.removeSource(source)
+            }
+            
+            let point = MLNPointAnnotation()
+            point.coordinate = currentLocation
+            
+            let shapeSource = MLNShapeSource(identifier: "marker-source", shape: point, options: nil)
+            
+            let shapeLayer = MLNSymbolStyleLayer(identifier: "marker-style", source: shapeSource)
+            
+            if let image = UIImage(systemName: "mappin") {
+                mapView.style?.setImage(image, forName: "marker-symbol")
+            }
+            
+            shapeLayer.iconImageName = NSExpression(forConstantValue: "marker-symbol")
+            
+            mapView.style?.addSource(shapeSource)
+            mapView.style?.addLayer(shapeLayer)
         }
         
         func mapView(_ mapView: MLNMapView, didFinishLoading style: MLNStyle) {
