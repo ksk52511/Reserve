@@ -10,10 +10,11 @@ import SwiftUI
 struct MatchingView: View {
     @State var isPresented: Bool = false
     @StateObject var router = MatchingRouter()
+    @StateObject var viewModel = MatchingViewModel()
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("OOO 예비군님 안녕하세요")
+            Text("\(viewModel.userName) 예비군님 안녕하세요")
                 .font(.title)
                 .fontWeight(.bold)
                 .padding(.top, 20)
@@ -100,6 +101,9 @@ struct MatchingView: View {
             
             Spacer()
         }
+        .onAppear(perform: {
+            viewModel.getUserInfo()
+        })
         .padding(.horizontal, 20)
         .fullScreenCover(isPresented: $isPresented, onDismiss: {
             router.popToRoot()

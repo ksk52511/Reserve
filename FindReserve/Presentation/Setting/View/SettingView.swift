@@ -6,32 +6,33 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct SettingView: View {
-    @State private var name: String = "예비군"
-    @State private var phone: String = "010-1234-5678"
-    @State private var account: String = "123-456-7890"
-
+    @StateObject var viewModel = SettingViewModel()
+    
     var body: some View {
         NavigationStack {
             Form {
                 Section(header: Text("내 정보")) {
-                    TextField("이름", text: $name)
-                    TextField("전화번호", text: $phone)
+                    TextField("이름", text: $viewModel.name)
+                    TextField("전화번호", text: $viewModel.phoneNumber)
                         .keyboardType(.phonePad)
-                    TextField("계좌번호", text: $account)
+                    TextField("계좌번호", text: $viewModel.account)
                         .keyboardType(.numberPad)
                 }
                 
                 Section {
                     Button(action: {
-        
-                        print("저장됨: \(name), \(phone), \(account)")
+                        viewModel.saveUserInfo()
                     }) {
                         Text("저장")
                             .foregroundColor(.blue)
                     }
                 }
+            }
+            .onAppear {
+                viewModel.getUserInfo()
             }
         }
     }
